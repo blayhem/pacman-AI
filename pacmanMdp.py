@@ -23,8 +23,11 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
         # Transition function (data structure required for the transition function)
         #*** YOUR CODE STARTS HERE ***"
         # Code to remove ---------- from here
-        self.frequencies = util.Counter()
+        # self.frequencies = util.Counter()
         # Code to remove ---------- to here
+
+
+
         #"*** YOUR CODE FINISHES HERE ***"
 
 

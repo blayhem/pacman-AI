@@ -1,7 +1,7 @@
 # valueIterationAgents.py
 # -----------------------
 ##
-import mdp, util
+import mdp, util, random
 import sys
 
 from learningAgents import ValueEstimationAgent
@@ -36,24 +36,6 @@ class ValueIterationAgent(ValueEstimationAgent):
             self.doValueIteration()
 
 
-    def doValueIteration (self):
-        # Write value iteration code here
-
-        print "Iterations: ", self.iterations
-        print "Discount: ", self.discount
-        states = self.mdp.getStates()
-        maxDelta = float("-inf")
-
-
-        util.raiseNotDefined()
-        #"*** YOUR CODE STARTS HERE ***"
-        # Your code should include the implementation of value iteration
-        # At the end it should show in the terminal the number of states considered in self.values and
-        # the Delta between the last two iterations
-
-        
-
-        #"*** YOUR CODE FINISHES HERE ***"
         
     def setMdp( self, mdp):
         """
@@ -87,9 +69,12 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
 
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
         #"*** YOUR CODE STARTS HERE ***"
-        
+        self.values = util.Counter()
+        qvalue = 0
+        for transition in self.mdp.getTransitionStatesAndProbabilities(state, action):
+            qvalue += transition[1] * (self.mdp.getReward(state, action, transition[0]) + self.discount * self.values[transition[0]])
 
         #"*** YOUR CODE FINISHES HERE ***"
         
@@ -117,9 +102,21 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
 
-        util.raiseNotDefined()
+        #util.raiseNotDefined()
         #"*** YOUR CODE STARTS HERE ***"
 
+        if self.mdp.isTerminal(state):
+            return None
+
+        actions = self.mdp.getPossibleActions(state)
+        action_val = util.Counter()
+        for action in actions:
+            action_val[action] = action_val[action] = self.getQValue(state, action)
+
+        if action_val.totalCount() == 0:
+            return actions[int(random.random()*len(actions))]
+        else:
+            return action_val.argMax()
 
         #"*** YOUR CODE FINISHES HERE ***"
 
@@ -133,7 +130,7 @@ class ValueIterationAgent(ValueEstimationAgent):
 
     
     def getQValue(self, state, action):
-        "Returns the Q value."        
+        "Returns the Q value."
         return self.computeQValueFromValues(state, action)
 
     def getPartialPolicy(self, stateL):
@@ -143,5 +140,28 @@ class ValueIterationAgent(ValueEstimationAgent):
             return self.computeActionFromValues(state)
         else:
             # random action
-            return util.random.choice(stateL.getLegalActions()) 
+            return util.random.choice(stateL.getLegalActions())
 
+    def doValueIteration(self):
+        # Write value iteration code here
+
+        print "Iterations: ", self.iterations
+        print "Discount: ", self.discount
+        states = self.mdp.getStates()
+        maxDelta = float("-inf")
+
+        # util.raiseNotDefined()
+        # "*** YOUR CODE STARTS HERE ***"
+        # Your code should include the implementation of value iteration
+        # At the end it should show in the terminal the number of states considered in self.values and
+        # the Delta between the last two iterations
+
+        for i in range(0, self.iterations):
+            for s in states:
+                actions = self.mdp.getPossibleActions(s)
+                action_val = util.Counter()
+                for a in actions:
+                    action_val[a] = self.getQValue(s, a)
+                self.values[s] = action_val.argMax()
+
+                # "*** YOUR CODE FINISHES HERE ***"
