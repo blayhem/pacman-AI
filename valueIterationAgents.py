@@ -70,13 +70,12 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
 
         # util.raiseNotDefined()
-        #"*** YOUR CODE STARTS HERE ***"
-        self.values = util.Counter()
+        # "*** YOUR CODE STARTS HERE ***"
         qvalue = 0
         for transition in self.mdp.getTransitionStatesAndProbabilities(state, action):
-            qvalue += transition[1] * (self.mdp.getReward(state, action, transition[0]) + self.discount * self.values[transition[0]])
+            qvalue += transition[1] * (self.mdp.getReward(state, action, transition[0]) + self.discount * self.getValue(transition[0]))
 
-        #"*** YOUR CODE FINISHES HERE ***"
+        # "*** YOUR CODE FINISHES HERE ***"
         
         return qvalue
     
@@ -105,18 +104,12 @@ class ValueIterationAgent(ValueEstimationAgent):
         #util.raiseNotDefined()
         #"*** YOUR CODE STARTS HERE ***"
 
-        if self.mdp.isTerminal(state):
-            return None
-
         actions = self.mdp.getPossibleActions(state)
         action_val = util.Counter()
         for action in actions:
-            action_val[action] = action_val[action] = self.getQValue(state, action)
+            action_val[action] = self.computeQValueFromValues(state, action)
 
-        if action_val.totalCount() == 0:
-            return actions[int(random.random()*len(actions))]
-        else:
-            return action_val.argMax()
+        return action_val.argMax()
 
         #"*** YOUR CODE FINISHES HERE ***"
 
@@ -134,7 +127,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         return self.computeQValueFromValues(state, action)
 
     def getPartialPolicy(self, stateL):
-        "Returns the partial policy at the state. Random for unkown states"        
+        "Returns the partial policy at the state. Random for unknown states"
         state = self.mdp.stateToHigh(stateL)
         if self.mdp.isKnownState(state):
             return self.computeActionFromValues(state)
@@ -157,11 +150,13 @@ class ValueIterationAgent(ValueEstimationAgent):
         # the Delta between the last two iterations
 
         for i in range(0, self.iterations):
+            auxdic = util.Counter()
             for s in states:
                 actions = self.mdp.getPossibleActions(s)
                 action_val = util.Counter()
                 for a in actions:
-                    action_val[a] = self.getQValue(s, a)
-                self.values[s] = action_val.argMax()
+                    action_val[a] = self.computeQValueFromValues(s, a)
+                auxdic[s] = action_val[action_val.argMax()]
+            self.values = auxdic
 
-                # "*** YOUR CODE FINISHES HERE ***"
+        # "*** YOUR CODE FINISHES HERE ***"
