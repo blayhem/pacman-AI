@@ -23,11 +23,8 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
         # Transition function (data structure required for the transition function)
         #*** YOUR CODE STARTS HERE ***"
         # Code to remove ---------- from here
-        # self.frequencies = util.Counter()
+        self.frequencies = util.Counter()
         # Code to remove ---------- to here
-
-
-
         #"*** YOUR CODE FINISHES HERE ***"
 
 
@@ -39,7 +36,6 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
         # Reward for each state at the high level representation
         self.reward = util.Counter()
 
-    
     def stateToHigh(self, stateL):
         """
           Returns the high level representation of an state
@@ -59,12 +55,12 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
         else:
             self.reward[stateH][0] += 1
             self.reward[stateH][1].append(stateL.getScore())
-            
 
-    def updateTransitionFunction(self, stateL, action, nextStateL):    
+
+    def updateTransitionFunction(self, stateL, action, nextStateL):
         """
           Updates the transition function with a new case stateL, action, nextStateL
-          
+
           The states received as parameters have a low level representation. The transition function
           should be stored over the high level (simplified) representation
 
@@ -81,10 +77,24 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
         self.addStateLow(state, stateL)
         self.addStateLow(nextState, nextStateL)
 
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
         #"*** YOUR CODE STARTS HERE ***"
 
-        
+        if self.frequencies.has_key(state):
+            if self.frequencies[state].has_key(action):
+                if self.frequencies[state][action].has_key(nextState):
+                    self.frequencies[state][action][nextState] += 1
+                else:
+                    self.frequencies[state][action][nextState] = 1
+            else:
+                self.frequencies[state][action] = util.Counter()
+                self.frequencies[state][action][nextState] = 1
+        else:
+            self.frequencies[state] = util.Counter()
+            self.frequencies[state][action] = util.Counter()
+            self.frequencies[state][action][nextState] = 1
+
+
         #"*** YOUR CODE FINISHES HERE ***"
 
     def getPossibleActions(self, state):
@@ -113,7 +123,7 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
 
     def getAverageReward(self, state):
         """
-        Return average rewards of the known low level states represented by a high level state 
+        Return average rewards of the known low level states represented by a high level state
         """
         return sum(i for i in  self.reward[state][1])/self.reward[state][0]
 
@@ -134,7 +144,7 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
         """
         get for start state
         """
-        return startState
+        return self.startState
 
     def isTerminal(self, state):
         """
@@ -152,7 +162,7 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
         for state in self.states.keys():
             for action in self.getPossibleActions(state):
                 print state, action, self.getTransitionStatesAndProbabilities(state, action)
-        
+
     def getTransitionStatesAndProbabilities(self, state, action):
         """
         Returns list of (nextState, prob) pairs
@@ -169,13 +179,17 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
 
         successors = []
 
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
         #"*** YOUR CODE STARTS HERE ***"
+        total = 0
 
+        if self.frequencies.has_key(state) and self.frequencies[state].has_key(action):
+            # ss = simplified state, aka number of times pacman did an action from a state.
+            for sstate in self.frequencies[state][action]:
+                total += self.frequencies[state][action][sstate]
+            for sstate in self.frequencies[state][action]:
+                successors.append((sstate, (self.frequencies[state][action][sstate])/total))
 
         #"*** YOUR CODE FINISHES HERE ***"
 
         return successors
-
-
-

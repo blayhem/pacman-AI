@@ -175,8 +175,8 @@ class StateExtractor(FeatureExtractor):
     # closest food
     if  state.getNumFood() != 0:
       (food_x, food_y) = closestFoodPos((x, y), food, walls)
-      features["FoodX"] =  int (state.getPacmanPosition()[0]- food_x)    
-      features["FoodY"] =  int (state.getPacmanPosition()[0]- food_y)
+      features["FoodX"] =  int (x- food_x)    
+      features["FoodY"] =  int (y- food_y)
 #      features["#Food"] =  True
 #      features["#Food"] =  state.getNumFood()
     else:  
