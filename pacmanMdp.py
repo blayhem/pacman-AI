@@ -79,7 +79,7 @@ class PacmanMdp(mdp.MarkovDecisionProcess):
 
         # util.raiseNotDefined()
         #"*** YOUR CODE STARTS HERE ***"
-
+        # state, action as tuple as KEY of 1st dict
         if self.frequencies.has_key(state):
             if self.frequencies[state].has_key(action):
                 if self.frequencies[state][action].has_key(nextState):
